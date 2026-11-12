@@ -64,6 +64,12 @@ Open the notebook and execute cells in order. The Excel workbook can be opened s
 
 The model should be extended with formal VaR backtesting (for example, unconditional-coverage and independence tests), Expected Shortfall, stress scenarios, parameter stability checks, and rolling out-of-sample evaluation. The current FHS implementation uses empirical standardised shocks and is sensitive to the sample window and volatility specification. The exact forecast horizon is one trading day.
 
+## Visual Result
+
+The figure below visualises the cached VaR values in the table above for the assumed $1,000,000 portfolio. It is a historical notebook output, not a live estimate.
+
+![Portfolio VaR comparison by model](results/figures/portfolio-var-comparison.svg)
+
 ## Disclaimer
 
 Educational quantitative-risk research only. VaR is model-dependent and does not bound the worst possible loss. Not investment advice.
