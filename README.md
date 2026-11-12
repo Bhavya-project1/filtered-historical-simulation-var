@@ -1,50 +1,69 @@
-# Filtered Historical Simulation for Value at Risk
+# Filtered Historical Simulation for Portfolio Value at Risk
 
-A quantitative risk-modelling project combining conditional-volatility estimation with a historical simulation approach to estimate portfolio tail risk.
+A quantitative risk-modelling notebook that combines conditional-volatility models with historical standardised shocks to estimate portfolio Value at Risk (VaR).
+
+The workflow models the conditional variance of a three-stock financial-sector portfolio, standardises historical residuals, rescales those shocks using the forecast volatility, and calculates loss quantiles at multiple confidence levels.
+
+## Portfolio and Data
+
+- Constituents: Goldman Sachs (GS), JPMorgan Chase (JPM), Morgan Stanley (MS)
+- Weights: 40%, 30%, 30%, respectively
+- Initial portfolio value: $1,000,000
+- Historical sample used in the first model comparisons: 2020-01-01 to 2026-08-10 (end date exclusive)
+- Observations in the cached output: 1,657 daily return observations
+
+The notebook downloads auto-adjusted closing prices using yfinance.
+
+## Models Compared
+
+- GARCH(1,1) with normal innovations
+- GARCH(1,1) with Student's t innovations
+- GJR-GARCH(1,1) with Student's t innovations
+- EGARCH with Student's t innovations
+- EWMA-based historical VaR
+
+The FHS-style scenario construction is based on:
+
+~~~text
+r_(t+1) = μ + σ_(t+1) z_t
+~~~
+
+where z_t denotes a historical standardised residual and σ_(t+1) is the one-step-ahead conditional-volatility forecast.
+
+## Cached Example Results
+
+The notebook retains the following VaR outputs for the first three GARCH specifications. Amounts are dollar losses on the assumed $1,000,000 portfolio.
+
+| Specification | 90% VaR | 95% VaR | 99% VaR |
+|---|---:|---:|---:|
+| GARCH(1,1), normal | $18,965.22 | $25,639.89 | $41,972.32 |
+| GARCH(1,1), Student's t | $19,653.65 | $26,314.20 | $43,442.72 |
+| GJR-GARCH(1,1), Student's t | $21,503.60 | $29,173.07 | $45,617.40 |
+
+These are cached notebook outputs, not current risk estimates. They correspond to the historical data and assumptions recorded in the notebook. Re-running the notebook may produce different values as Yahoo Finance data and model fits change.
 
 ## Repository Contents
 
-- `GARCH • GJR-GARCH • EGARCH • EWMA.ipynb` — volatility modelling notebook.
-- `Results of VaR + GARCH Models.xlsx` — spreadsheet of results.
+- GARCH • GJR-GARCH • EGARCH • EWMA.ipynb — volatility estimation and VaR scenarios.
+- Results of VaR + GARCH Models.xlsx — supporting spreadsheet of results.
 
-## Methodological Overview
+## Technology
 
-Filtered Historical Simulation (FHS) separates return shocks from time-varying volatility. A typical workflow is:
-
-1. Fit a conditional-volatility model to returns.
-2. Standardise historical residuals using estimated conditional volatility.
-3. Resample or replay the standardised shocks.
-4. Scale shocks by current or forecast conditional volatility.
-5. Reconstruct scenario returns and calculate the relevant loss quantile.
-
-The notebook examines GARCH-family and EWMA volatility approaches.
-
-### Volatility Models
-
-- **GARCH:** models conditional variance using past squared shocks and past conditional variance.
-- **GJR-GARCH:** introduces an asymmetric response to negative and positive shocks.
-- **EGARCH:** models log conditional variance and can capture asymmetric effects.
-- **EWMA:** updates variance using exponentially decaying weights on past squared returns.
+Python · NumPy · pandas · yfinance · arch · Jupyter Notebook · Excel
 
 ## Run
 
-```bash
-pip install numpy pandas scipy matplotlib statsmodels arch openpyxl jupyter
+~~~bash
+pip install -r requirements.txt
 jupyter notebook
-```
+~~~
 
-Open the notebook and execute the cells in order. Open the Excel workbook separately to inspect reported outputs and calculations.
+Open the notebook and execute cells in order. The Excel workbook can be opened separately in Microsoft Excel.
 
-## Risk Evaluation
+## Risk Evaluation and Limitations
 
-FHS can incorporate volatility clustering while retaining an empirical distribution of standardised shocks. Performance depends on the volatility specification, residual quality, sample window, tail observations, and scenario assumptions.
-
-A robust assessment should include VaR backtesting, exception analysis, Expected Shortfall, stress scenarios, and comparison with alternative VaR methods.
-
-## Limitations
-
-The exact portfolio, return frequency, forecast horizon, confidence levels, and implementation choices are defined by the notebook and workbook. Confirm these before interpreting or comparing results.
+The model should be extended with formal VaR backtesting (for example, unconditional-coverage and independence tests), Expected Shortfall, stress scenarios, parameter stability checks, and rolling out-of-sample evaluation. The current FHS implementation uses empirical standardised shocks and is sensitive to the sample window and volatility specification. The exact forecast horizon is one trading day.
 
 ## Disclaimer
 
-Educational quantitative-risk research only. VaR is a model-based estimate, not a maximum-loss guarantee or investment advice.
+Educational quantitative-risk research only. VaR is model-dependent and does not bound the worst possible loss. Not investment advice.
