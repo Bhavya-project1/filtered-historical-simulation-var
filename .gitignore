@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+dist/
+wheels/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment variables and credentials
+.env
+.env.*
+!.env.example
+
+# Local data and generated outputs (keep documentation and placeholders)
+data/raw/
+data/interim/
+data/processed/
+results/generated/
+*.log
